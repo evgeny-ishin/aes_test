@@ -1,7 +1,7 @@
 #include "cripto_api.h"
 #include <time.h>
 
-int convertData(unsigned char direction,const char *key, void** out, void* solt,char *input_data, size_t key_length)
+int convertData(unsigned char direction,const char *key, void** out, void* solt,char *input_data, size_t key_length,int *size_of_data)
 {
     if(key == NULL)
     {
@@ -26,8 +26,21 @@ int convertData(unsigned char direction,const char *key, void** out, void* solt,
     int flag_few_input_data = 0;
     if((input_data_len % minimum_block) != 0)
     {
-        float len =  (float)input_data_len / (float)minimum_block;
-        input_data_len = (ceil(len) + 1) * minimum_block;
+        if(*size_of_data == 0)
+        {
+            float len =  (float)input_data_len / (float)minimum_block;
+            input_data_len = (ceil(len) + 1) * minimum_block;
+            *size_of_data = input_data_len;
+        }
+        else
+        {
+            if(*size_of_data < 0)
+            {
+                printf("wrong value for size_of_data\n");
+                return -1;
+            }
+            input_data_len = *size_of_data;
+        }
         in_data = (char*)malloc(input_data_len);
         if(in_data == NULL)
         {
@@ -35,7 +48,14 @@ int convertData(unsigned char direction,const char *key, void** out, void* solt,
         }
         memset(in_data,0x00,input_data_len);
         flag_few_input_data = 1;
-        memcpy(in_data, input_data,strlen(input_data));
+        if(*size_of_data > 0)
+        {
+            memcpy(in_data, input_data, *size_of_data);
+        }
+        else
+        {
+            memcpy(in_data, input_data,strlen(input_data));
+        }
     }
     else
     {

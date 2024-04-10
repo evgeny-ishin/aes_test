@@ -45,7 +45,8 @@ int main()
         return -1;
     }
     char *passw_to_aes = NULL;
-    if(convertData(0,key, &passw_to_aes, solt, my_pass, key_size) < 0)
+    int data_for_pass = 0;
+    if(convertData(0,key, &passw_to_aes, solt, my_pass, key_size,&data_for_pass) < 0)
     {
         free(key);
         key = NULL;
@@ -60,7 +61,8 @@ int main()
         return -1;
     }
     char *login_to_aes = NULL;
-    if(convertData(0,key, &login_to_aes, solt, my_login, key_size) < 0)
+    int data_for_login = 0;
+    if(convertData(0,key, &login_to_aes, solt, my_login, key_size, &data_for_login) < 0)
     {
         free(key);
         key = NULL;
@@ -79,7 +81,7 @@ int main()
         return -1;
     }
     printf("====================start login AES data=============================\n");
-    for(int i = 0; i < strlen(login_to_aes); i++)
+    for(int i = 0; i < data_for_login; i++)
     {
         printf("0x%hhu\t",login_to_aes[i]);
         if((i + 1) % 4 == 0) printf("\n");
@@ -87,7 +89,7 @@ int main()
     printf("======================end login AES data=============================\n");
     printf("\n\n");
     printf("====================start passw AES data=============================\n");
-    for(int i = 0; i < strlen(passw_to_aes); i++)
+    for(int i = 0; i < data_for_pass; i++)
     {
         printf("0x%hhu\t",passw_to_aes[i]);
         if((i + 1) % 4 == 0) printf("\n");
@@ -95,7 +97,7 @@ int main()
     printf("======================end passw AES data=============================\n");
     printf("\n\n");
     char *passw_from_aes = NULL;
-    if(convertData(1,key, &passw_from_aes,solt,passw_to_aes,key_size) < 0)
+    if(convertData(1,key, &passw_from_aes,solt,passw_to_aes,key_size, &data_for_pass) < 0)
     {
         free(key);
         key = NULL;
@@ -109,7 +111,7 @@ int main()
         return -1;
     }
     char *login_from_aes = NULL;
-    if(convertData(1,key, &login_from_aes,solt,login_to_aes,key_size) < 0)
+    if(convertData(1,key, &login_from_aes,solt,login_to_aes,key_size, &data_for_login) < 0)
     {
         free(key);
         key = NULL;

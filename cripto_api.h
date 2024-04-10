@@ -13,7 +13,7 @@
  * \param input_data - input data
  * \param key_length - size of key
  */
-int convertData(unsigned char direction, const char *pass, void **out, void* solt, char *input_data, size_t key_length);
+int convertData(unsigned char direction, const char *pass, void **out, void* solt, char *input_data, size_t key_length, int *size_of_data);
 
 
 /*!
