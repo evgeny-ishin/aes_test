@@ -1,11 +1,11 @@
 #include "cripto_api.h"
 #include <time.h>
 
-void convertData(unsigned char direction,const char *key, void** out, void* solt,char *input_data, size_t key_length)
+int convertData(unsigned char direction,const char *key, void** out, void* solt,char *input_data, size_t key_length)
 {
     if(key == NULL)
     {
-        return;
+        return -1;
     }
     enum gcry_cipher_algos algorithm;
     switch(key_length)
@@ -31,7 +31,7 @@ void convertData(unsigned char direction,const char *key, void** out, void* solt
         in_data = (char*)malloc(input_data_len);
         if(in_data == NULL)
         {
-            return;
+            return -1;
         }
         memset(in_data,0x00,input_data_len);
         flag_few_input_data = 1;
@@ -42,6 +42,10 @@ void convertData(unsigned char direction,const char *key, void** out, void* solt
         in_data = input_data;
     }
     *out = (char*)malloc(input_data_len);
+    if(out == NULL)
+    {
+        return -1;
+    }
     size_t solt_len = strlen(solt);
     gcry_error_t err;
     gcry_cipher_hd_t hd;
@@ -50,16 +54,19 @@ void convertData(unsigned char direction,const char *key, void** out, void* solt
     if(err)
     {
         printf("gcry_cipher_open failed:  %s/%s\n", gcry_strsource(err), gcry_strerror(err));
+        return -1;
     }
     err = gcry_cipher_setkey(hd,key,key_len);
     if(err)
     {
         printf("gcry_cipher_setkey failed:  %s/%s\n", gcry_strsource(err), gcry_strerror(err));
+        return -1;
     }
     err =  gcry_cipher_setiv(hd, solt, solt_len);
     if(err)
     {
         printf("gcry_cipher_setiv failed:  %s/%s\n", gcry_strsource(err), gcry_strerror(err));
+        return -1;
     }
     if(!direction)
     {
@@ -67,6 +74,7 @@ void convertData(unsigned char direction,const char *key, void** out, void* solt
         if(err)
         {
             printf("gcry_cipher_encrypt failed:  %s/%s\n", gcry_strsource(err), gcry_strerror(err));
+            return -1;
         }
     }
     else if(direction == 1)
@@ -75,6 +83,7 @@ void convertData(unsigned char direction,const char *key, void** out, void* solt
         if(err)
         {
             printf("gcry_cipher_decrypt failed:  %s/%s\n", gcry_strsource(err), gcry_strerror(err));
+            return -1;
         }
     }
     gcry_cipher_close(hd);
@@ -82,13 +91,17 @@ void convertData(unsigned char direction,const char *key, void** out, void* solt
     {
         free(in_data);
     }
-
+    return 0;
 }
 
 
 char* generateKey(size_t key_size)
 {
     char *key_out =  (char*)malloc((key_size) + 1);
+    if(key_out == NULL)
+    {
+        return NULL;
+    }
     unsigned char byte = 0x00;
     for(int i = 0; i < key_size; i++)
     {

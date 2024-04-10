@@ -11,6 +11,7 @@ int setPassword(char *pass, int size)
     {
         return -1;
     }
+    return 0;
 }
 
 int setKeyLength()
@@ -44,6 +45,7 @@ int setLogin(char *login, int size)
     {
         return -1;
     }
+    return 0;
 }
 
 int checkAuthenticationValues(char *value, int size)
